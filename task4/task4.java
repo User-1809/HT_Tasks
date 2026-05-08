@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class Moves {
+public class task4 {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         List<Integer> nums = new ArrayList<>();      // Динамический список
