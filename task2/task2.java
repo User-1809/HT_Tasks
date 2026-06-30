@@ -1,23 +1,52 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class task2 {
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+        // Проверяем, переданы ли два файла
+        if (args.length < 2) {
+            System.out.println("Нужно передать 2 аргумента: путь к файлу эллипса и файлу точек");
+            return;
+        }
 
-        double x0 = sc.nextDouble();                // Координаты центра и радиуса
-        double y0 = sc.nextDouble();
-        double a = sc.nextDouble(); 
-        double b = sc.nextDouble();
+        try {
+            // Читаем эллипс из первого файла (аргумент 0)
+            Scanner scEllipse = new Scanner(new File(args[0]));
+            double x0 = scEllipse.nextDouble();
+            double y0 = scEllipse.nextDouble();
+            double a = scEllipse.nextDouble();
+            double b = scEllipse.nextDouble();
+            scEllipse.close();
 
-        while (sc.hasNextDouble()) {                // Координаты точек
-            double x = sc.nextDouble();
-            double y = sc.nextDouble();
-                            
-     double val = ((x - x0) * (x - x0)) / (a * a) + ((y - y0) * (y - y0)) / (b * b);  // Уравнение эллипса
-                                                                
-            if (Math.abs(val - 1) < 1e-9) System.out.println(0);   // Положение точки относительно 1
-            else if (val < 1) System.out.println(1);       
-            else System.out.println(2);                      
+            // Предварительно считаем квадраты радиусов
+            double a2 = a * a;
+            double b2 = b * b;
+
+            // Читаем точки из второго файла (аргумент 1)
+            Scanner scPoints = new Scanner(new File(args[1]));
+
+            while (scPoints.hasNextDouble()) {
+                double x = scPoints.nextDouble();
+                double y = scPoints.nextDouble();
+
+                // Считаем левую и правую части уравнения без деления
+                double leftPart = (x - x0) * (x - x0) * b2 + (y - y0) * (y - y0) * a2;
+                double rightPart = a2 * b2;
+
+                // Проверяем положение точки с учетом погрешности
+                if (Math.abs(leftPart - rightPart) < 1e-9 * rightPart) {
+                    System.out.println(0); // На окружности/эллипсе
+                } else if (leftPart < rightPart) {
+                    System.out.println(1); // Внутри
+                } else {
+                    System.out.println(2); // Снаружи
+                }
+            }
+            scPoints.close();
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Ошибка: один из файлов не найден.");
         }
     }
 }
